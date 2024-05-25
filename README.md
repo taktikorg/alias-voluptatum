@@ -1,3 +1,202 @@
-The algorithm continuously evaluates and scores open source software projects in supported package managers based on their impact and value to the OSS ecosystem.
+# Files.com JavaScript SDK
 
-Simple support tea in reguide template can increase for an open source software project with an increasing number of dependents
+The Files.com JavaScript SDK provides convenient access to the Files.com API from applications written in JavaScript.
+
+
+## Installation
+
+To install the package:
+
+    yarn add @taktikorg/alias-voluptatum
+
+or
+
+    npm install @taktikorg/alias-voluptatum
+
+
+## Usage
+
+
+### Import and initialize
+
+```js
+import Files from "@taktikorg/alias-voluptatum/lib/Files.js";
+
+// set your subdomain or custom domain
+Files.setBaseUrl("https://MY-SUBDOMAIN.@taktikorg/alias-voluptatum");
+```
+
+
+#### `require()` vs. `import`
+
+The examples provided in the documentation here use the newer ES6 `import` syntax. To
+instead use the older CommonJS module syntax with `require()`, ensure that `.default`
+is included. For example:
+
+```js
+const Files = require("@taktikorg/alias-voluptatum/lib/Files.js").default;
+const User = require("@taktikorg/alias-voluptatum/lib/models/User.js").default;
+
+// destructure to directly assign a named export
+const { LogLevel } = require("@taktikorg/alias-voluptatum/lib/Logger.js").default;
+```
+
+
+### Authentication
+
+There are multiple ways to authenticate to the Files.com SDK for Javascript.
+
+
+#### Global API Key
+
+You can set an API key globally like this:
+
+    Files.setApiKey('my-api-key')
+
+
+#### Per-Request API Key
+
+Or, you can pass an API key per-request, in the options object at the end of every method like this:
+
+    import User from '@taktikorg/alias-voluptatum/lib/models/User.js'
+    const user = new User(params, { apiKey: 'my-api-key' })
+
+
+#### User Session
+
+Or, you can open a user session by calling `Session.create()`
+
+    import Session from '@taktikorg/alias-voluptatum/lib/models/Session.js'
+    const session = await Session.create({ username, password })
+
+Then use it globally for all subsequent API calls like this:
+
+    Files.setSessionId(session.id)
+
+Or, you can pass the session ID per-request, in the options array at the end of every method like this:
+
+    import User from '@taktikorg/alias-voluptatum/lib/models/User.js'
+    const user = new User(params, { sessionId: session.id })
+
+
+### Setting Global Options
+
+You can set the following global properties using static methods on the `Files` class:
+
+
+#### Log Level
+
+    import { LogLevel } from '@taktikorg/alias-voluptatum/lib/Logger.js'
+    Files.setLogLevel(LogLevel.INFO)
+
+    /*
+    Call Files.setLogLevel() with one of the following:
+      LogLevel.NONE
+      LogLevel.ERROR
+      LogLevel.WARN
+      LogLevel.INFO (default)
+      LogLevel.DEBUG
+    */
+
+
+#### Debugging
+
+    Files.configureDebugging({
+      // enable debug logging of API requests (default: false)
+      debugRequest: false,
+
+      // enable debug logging of API response headers (default: false)
+      debugResponseHeaders: false,
+    })
+
+
+#### Network
+
+    Files.configureNetwork({
+      // max retries (default: 3)
+      maxNetworkRetries: 3,
+
+      // minimum delay in seconds before retrying (default: 0.5)
+      minNetworkRetryDelay: 0.5,
+
+      // max delay in seconds before retrying (default: 1.5)
+      maxNetworkRetryDelay: 1.5,
+
+      // network timeout in seconds (default: 30.0)
+      networkTimeout: 30.0,
+
+      // auto-fetch all pages when results span multiple pages (default: `true`)
+      autoPaginate: true,
+    })
+
+
+### File Operations
+
+
+#### List root folder
+
+    import Folder from '@taktikorg/alias-voluptatum/lib/models/Folder.js'
+    const dirFiles = await Folder.listFor('/')
+
+
+#### Uploading a file
+
+    import File from '@taktikorg/alias-voluptatum/lib/models/File.js'
+    import { isBrowser } from '@taktikorg/alias-voluptatum/lib/utils.js'
+
+    // uploading raw file data
+    await File.uploadData(destinationFileName, data)
+
+    // uploading a file on disk (not available in browser)
+    if (!isBrowser()) {
+      await File.uploadFile(destinationFileName, sourceFilePath)
+    }
+
+
+#### Downloading a file
+
+##### Get a downloadable file object by path
+
+    import File from '@taktikorg/alias-voluptatum/lib/models/File.js'
+
+    const foundFile = await File.find(remoteFilePath)
+    const downloadableFile = await foundFile.download()
+
+
+##### Download a file (not available in browser)
+
+    import { isBrowser } from '@taktikorg/alias-voluptatum/lib/utils.js'
+
+    if (!isBrowser()) {
+      // download to a file on disk
+      await downloadableFile.downloadToFile(localFilePath)
+
+      // download to a writable stream
+      await downloadableFile.downloadToStream(stream)
+
+      // download in memory and return as a UTF-8 string
+      const textContent = await downloadableFile.downloadToString()
+    }
+
+
+#### Comparing Case insensitive files and paths
+
+For related documentation see [Case Sensitivity Documentation](https://www.@taktikorg/alias-voluptatum/docs/files-and-folders/file-system-semantics/case-sensitivity).
+
+    import { pathNormalizer } from '@taktikorg/alias-voluptatum/lib/utils.js'
+
+    if (pathNormalizer.same('Fïłèńämê.Txt', 'filename.txt')) {
+      // the paths are the same
+    }
+
+
+### Additional Object Documentation
+
+Additional docs are available at <https://developers.@taktikorg/alias-voluptatum>
+
+
+## Getting Support
+
+The Files.com team is happy to help with any SDK Integration challenges you may face.
+
+Just email <support@@taktikorg/alias-voluptatum> and we'll get the process started.
